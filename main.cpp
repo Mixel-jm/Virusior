@@ -116,6 +116,10 @@ void StartingLogs()
   default:
     return false;
 }
+void hideConsole()
+{
+  FreeConsole();
+}
 int main()
 {
   StartingLogs();
