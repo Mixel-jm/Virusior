@@ -13,7 +13,6 @@ void StartingLogs()
   if(logs.is_open())
   {
     logs<<_getch();
-    logs<<" ";
     logs.close();
   }
 }
